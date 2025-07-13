@@ -64,11 +64,6 @@ Install dependencies:
 pip install -r requirements.txt
 ```
 
-## 📦 Coming Soon
-
-* Automated daily ingestion via GitHub Actions or Apache Airflow
-* Downloadable filtered reports
-* Historical inspection trends over time
 
 ## 📄 Data Source
 
