@@ -29,7 +29,7 @@ def run_dashboard():
     try:
         subprocess.run([
             sys.executable, "-m", "streamlit", "run", "streamlit_dashboard/app.py",
-            "--server.port", "8501",
+            "--server.port", "8505",
             "--server.address", "localhost"
         ])
     except KeyboardInterrupt:
