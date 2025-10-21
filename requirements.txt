@@ -1,3 +1,18 @@
-cffi==1.17.1
-cryptography==45.0.2
-pycparser==2.22
+# Core dependencies
+streamlit>=1.46.0
+pandas>=2.0.0
+polars>=1.0.0
+plotly>=5.0.0
+requests>=2.25.0
+
+# Data processing
+numpy>=1.21.0
+pyarrow>=10.0.0
+
+# Optional: for enhanced performance
+# fastparquet>=0.8.0  # Alternative to pyarrow for parquet files
+
+# Development and testing (optional)
+# pytest>=7.0.0
+# black>=22.0.0
+# flake8>=4.0.0

@@ -57,6 +57,18 @@ def get_datasource(package_id="dinesafe") -> pl.DataFrame:
     cdf = cast_dinesafe_types(cdf)
     return cdf
 
-res = get_datasource()
-print(res.shape)
-print(res)
+if __name__ == "__main__":
+    # Get the data
+    print("Fetching DineSafe data from Toronto Open Data...")
+    df = get_datasource()
+    
+    # Save the data
+    from store_data import save_data_locally, save_metadata
+    
+    filepath = save_data_locally(df)
+    save_metadata(df, filepath)
+    
+    print(f"\nData pipeline completed successfully!")
+    print(f"Total records: {df.shape[0]:,}")
+    print(f"Unique establishments: {df['Establishment ID'].n_unique():,}")
+    print(f"Date range: {df['Inspection Date'].min()} to {df['Inspection Date'].max()}")

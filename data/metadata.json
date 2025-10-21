@@ -1,0 +1,33 @@
+{
+  "filepath": "data\\dinesafe_data_20251021_161022.parquet",
+  "shape": [
+    146916,
+    17
+  ],
+  "columns": [
+    "_id",
+    "Establishment ID",
+    "Inspection ID",
+    "Establishment Name",
+    "Establishment Type",
+    "Establishment Address",
+    "Establishment Status",
+    "Min. Inspections Per Year",
+    "Infraction Details",
+    "Inspection Date",
+    "Severity",
+    "Action",
+    "Outcome",
+    "Amount Fined",
+    "Latitude",
+    "Longitude",
+    "unique_id"
+  ],
+  "date_range": {
+    "min": "2022-06-20",
+    "max": "2025-10-20"
+  },
+  "last_updated": "2025-10-21T16:10:22.824133",
+  "unique_establishments": 22013,
+  "total_inspections": 146916
+}
