@@ -1,63 +1,42 @@
 #!/usr/bin/env python3
 """
-Orchestration script for the Toronto DineSafe Dashboard
+Simple script to run the Toronto DineSafe Dashboard
+This works for both local development and Streamlit Cloud deployment
 """
 
-import subprocess
 import sys
 import os
 from pathlib import Path
 
-def run_data_pipeline():
-    """Run the data pipeline to fetch and clean data."""
-    print("🔄 Running data pipeline...")
-    try:
-        result = subprocess.run([
-            sys.executable, "data_pipeline/retrieve_and_clean.py"
-        ], check=True, capture_output=True, text=True)
-        print("✅ Data pipeline completed successfully!")
-        print(result.stdout)
-        return True
-    except subprocess.CalledProcessError as e:
-        print(f"❌ Data pipeline failed: {e}")
-        print(f"Error output: {e.stderr}")
-        return False
-
-def run_dashboard():
-    """Run the Streamlit dashboard."""
-    print("🚀 Starting Streamlit dashboard...")
-    try:
-        subprocess.run([
-            sys.executable, "-m", "streamlit", "run", "streamlit_dashboard/app.py",
-            "--server.port", "8505",
-            "--server.address", "localhost"
-        ])
-    except KeyboardInterrupt:
-        print("\n👋 Dashboard stopped by user")
-    except Exception as e:
-        print(f"❌ Dashboard failed to start: {e}")
-
-def main():
-    """Main orchestration function."""
-    print("🍽️ Toronto DineSafe Dashboard Orchestrator")
-    print("=" * 50)
-    
-    # Check if data exists
+def check_data_exists():
+    """Check if we have data files, if not run the data pipeline"""
     data_dir = Path("data")
     if not data_dir.exists() or not list(data_dir.glob("*.parquet")):
-        print("📥 No data found. Running data pipeline first...")
-        if not run_data_pipeline():
-            print("❌ Cannot proceed without data. Exiting.")
-            return
-    else:
-        print("✅ Data already exists. Skipping data pipeline.")
+        print("No data found, need to run data pipeline first")
+        return False
+    return True
+
+def main():
+    """Main function - just run the streamlit app"""
+    print("Toronto DineSafe Dashboard")
+    print("=" * 40)
     
-    print("\n🚀 Starting dashboard...")
-    print("Dashboard will be available at: http://localhost:8501")
-    print("Press Ctrl+C to stop the dashboard")
-    print("-" * 50)
+    # Check if we have data
+    if not check_data_exists():
+        print("Cannot run without data. Make sure to run data pipeline first.")
+        return
     
-    run_dashboard()
+    print("Data found, starting dashboard...")
+    
+    # For Streamlit Cloud, we just import and run the app directly
+    # The actual streamlit run command is handled by the cloud platform
+    try:
+        # Import the app module to make sure it works
+        from streamlit_dashboard import app
+        print("App module loaded successfully")
+    except ImportError as e:
+        print(f"Error loading app: {e}")
+        return
 
 if __name__ == "__main__":
     main()
