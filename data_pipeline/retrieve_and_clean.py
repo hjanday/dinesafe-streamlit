@@ -2,14 +2,15 @@ import requests
 import pandas as pd
 import polars as pl
 import io
-# Toronto Open Data is stored in a CKAN instance. It's APIs are documented here:
-# https://docs.ckan.org/en/latest/api/
+# toronto open data uses ckan api
+# docs are here: https://docs.ckan.org/en/latest/api/
 
-# BASE URL
+# base url for the api
 BASE_URL = "https://ckan0.cf.opendata.inter.prod-toronto.ca"
 
 
 def cast_dinesafe_types(df: pl.DataFrame) -> pl.DataFrame:
+    # convert columns to the right data types
     return df.with_columns([
         pl.col("_id").cast(pl.Int64),
         pl.col("Establishment ID").cast(pl.Utf8),
@@ -32,7 +33,7 @@ def cast_dinesafe_types(df: pl.DataFrame) -> pl.DataFrame:
     ])
 
 def get_datasource(package_id="dinesafe") -> pl.DataFrame:
-    # Get package metadata
+    # get info about the dataset
     url = f"{BASE_URL}/api/3/action/package_show"
     params = {"id": package_id}
     package = requests.get(url, params=params).json()
@@ -40,10 +41,10 @@ def get_datasource(package_id="dinesafe") -> pl.DataFrame:
     if not package.get("success"):
         raise Exception("Failed to fetch package metadata.")
     
-    # Define total df
+    # list to hold all the data
     df_total = []
 
-    # Loop over the dataset and create an appended total 
+    # go through each file in the dataset
     for resource in package["result"]["resources"]:
         if resource["datastore_active"]:
             url = BASE_URL + "/datastore/dump/" + resource["id"]
@@ -52,17 +53,17 @@ def get_datasource(package_id="dinesafe") -> pl.DataFrame:
             df = pl.read_csv(io.StringIO(resource_dump_data), infer_schema=False)
             df_total.append(df)
     
-    # concate all df's
+    # combine all the dataframes
     cdf = pl.concat(df_total)
     cdf = cast_dinesafe_types(cdf)
     return cdf
 
 if __name__ == "__main__":
-    # Get the data
+    # get the data from toronto
     print("Fetching DineSafe data from Toronto Open Data...")
     df = get_datasource()
     
-    # Save the data
+    # save it to files
     from store_data import save_data_locally, save_metadata
     
     filepath = save_data_locally(df)
@@ -70,5 +71,5 @@ if __name__ == "__main__":
     
     print(f"\nData pipeline completed successfully!")
     print(f"Total records: {df.shape[0]:,}")
-    print(f"Unique establishments: {df['Establishment ID'].n_unique():,}")
+    print(f"Unique establishments: {df['Establishment ID'].nunique():,}")
     print(f"Date range: {df['Inspection Date'].min()} to {df['Inspection Date'].max()}")

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Simple cleanup script for local development only
-This wont work on Streamlit Cloud but helps with local testing
+simple cleanup script for local development only
+this wont work on streamlit cloud but helps with local testing
 """
 
 import subprocess
@@ -9,12 +9,12 @@ import os
 import sys
 
 def kill_streamlit_processes():
-    """Kill any running streamlit processes on your local machine"""
+    """kill any running streamlit processes on your local machine"""
     print("Cleaning up streamlit processes...")
     
     try:
-        if os.name == 'nt':  # Windows
-            # Kill streamlit processes
+        if os.name == 'nt':  # windows
+            # kill streamlit processes
             result = subprocess.run(['taskkill', '/f', '/im', 'streamlit.exe'], 
                                   capture_output=True, text=True)
             if result.returncode == 0:
@@ -22,7 +22,7 @@ def kill_streamlit_processes():
             else:
                 print("No streamlit processes found")
                 
-        else:  # Mac/Linux
+        else:  # mac/linux
             result = subprocess.run(['pkill', '-f', 'streamlit'], 
                                   capture_output=True, text=True)
             if result.returncode == 0:
@@ -34,7 +34,7 @@ def kill_streamlit_processes():
         print(f"Error during cleanup: {e}")
 
 def check_port_usage(port=8501):
-    """Check if a port is being used"""
+    """check if a port is being used"""
     import socket
     try:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:

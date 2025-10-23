@@ -7,23 +7,23 @@ from typing import Optional, Dict, Any
 import sys
 import os
 
-# Add the parent directory to the path so we can import from data_pipeline
+# need to add parent directory to path so we can import stuff
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from data_pipeline.store_data import load_latest_data
 
 
-@st.cache_data(ttl=3600, show_spinner="Loading DineSafe data...")  # Cache for 1 hour
+@st.cache_data(ttl=3600, show_spinner="Loading DineSafe data...")  # cache for 1 hour
 def load_dinesafe_data() -> pl.DataFrame:
     """
-    Load the DineSafe data with caching for performance.
+    load the dinesafe data with caching so it doesnt take forever
     
     Returns:
         Polars DataFrame with inspection data
     """
     try:
         df = load_latest_data()
-        # Convert to pandas for better caching compatibility
+        # convert to pandas because streamlit likes pandas better
         return df.to_pandas()
     except FileNotFoundError as e:
         st.error(f"Data not found: {e}")
@@ -34,7 +34,7 @@ def load_dinesafe_data() -> pl.DataFrame:
 @st.cache_data(ttl=3600)
 def load_metadata() -> Optional[Dict[str, Any]]:
     """
-    Load metadata about the dataset.
+    load metadata about the dataset
     
     Returns:
         Dictionary with dataset metadata
@@ -54,7 +54,7 @@ def load_metadata() -> Optional[Dict[str, Any]]:
 
 def get_data_summary(df: pd.DataFrame) -> Dict[str, Any]:
     """
-    Generate a summary of the loaded data.
+    get some basic stats about the data
     
     Args:
         df: Pandas DataFrame with inspection data
@@ -87,7 +87,7 @@ def filter_data(df: pd.DataFrame,
                 date_range: tuple = None,
                 business_name_filter: str = None) -> pd.DataFrame:
     """
-    Filter the data based on various criteria.
+    filter the data based on what the user wants to see
     
     Args:
         df: Pandas DataFrame with inspection data
@@ -105,31 +105,31 @@ def filter_data(df: pd.DataFrame,
     
     filtered_df = df.copy()
     
-    # Filter by severity
+    # filter by severity if they picked some
     if severity_filter:
         filtered_df = filtered_df[filtered_df["Severity"].isin(severity_filter)]
     
-    # Filter by establishment status
+    # filter by status if they picked some
     if status_filter:
         filtered_df = filtered_df[filtered_df["Establishment Status"].isin(status_filter)]
     
-    # Filter by establishment type
+    # filter by type if they picked some
     if establishment_type_filter:
         filtered_df = filtered_df[filtered_df["Establishment Type"].isin(establishment_type_filter)]
     
-    # Filter by date range
+    # filter by date range if they picked dates
     if date_range and len(date_range) == 2:
         start_date, end_date = date_range
         if start_date:
-            # Convert date to datetime for comparison
+            # convert date to datetime so we can compare
             start_datetime = pd.to_datetime(start_date)
             filtered_df = filtered_df[filtered_df["Inspection Date"] >= start_datetime]
         if end_date:
-            # Convert date to datetime for comparison
+            # convert date to datetime so we can compare
             end_datetime = pd.to_datetime(end_date)
             filtered_df = filtered_df[filtered_df["Inspection Date"] <= end_datetime]
     
-    # Filter by business name (case-insensitive partial match)
+    # filter by business name (case-insensitive search)
     if business_name_filter:
         filtered_df = filtered_df[
             filtered_df["Establishment Name"].str.lower().str.contains(business_name_filter.lower(), na=False)
@@ -140,7 +140,7 @@ def filter_data(df: pd.DataFrame,
 
 def get_heatmap_data(df: pd.DataFrame) -> pd.DataFrame:
     """
-    Prepare data for heatmap visualization.
+    get data ready for the heatmap
     
     Args:
         df: Pandas DataFrame with inspection data
@@ -151,20 +151,20 @@ def get_heatmap_data(df: pd.DataFrame) -> pd.DataFrame:
     if df is None or df.empty:
         return pd.DataFrame()
     
-    # Filter out null coordinates
+    # get rid of rows without coordinates
     df_coords = df.dropna(subset=["Latitude", "Longitude"])
     
     if df_coords.empty:
         return pd.DataFrame()
     
-    # Group by latitude/longitude and count inspections
+    # group by location and count how many inspections each place had
     heatmap_data = (
         df_coords
         .groupby(["Latitude", "Longitude", "Establishment Name", "Establishment Address"])
         .agg({
-            "Inspection ID": "count",  # Count inspections
-            "Severity": lambda x: x.value_counts().to_dict(),  # Severity breakdown
-            "Establishment Status": "first"  # First status
+            "Inspection ID": "count",  # count inspections
+            "Severity": lambda x: x.value_counts().to_dict(),  # severity breakdown
+            "Establishment Status": "first"  # first status
         })
         .rename(columns={"Inspection ID": "inspection_count", "Establishment Status": "status"})
         .sort_values("inspection_count", ascending=False)

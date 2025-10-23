@@ -1,12 +1,39 @@
-# 🍽️ Toronto DineSafe Dashboard
+# Toronto DineSafe Dashboard
 
 A comprehensive data pipeline and interactive Streamlit dashboard for exploring Toronto Public Health's DineSafe inspection data with heatmap visualizations and advanced filtering capabilities.
 
-## 🚀 Overview
+## Overview
 
 This project ingests, cleans, and stores restaurant inspection data from the City of Toronto's Open Data portal, then visualizes it in an interactive dashboard built with Streamlit. The dashboard features an interactive heatmap showing restaurant locations and inspection frequency, along with comprehensive analytics and filtering options.
 
-## 📁 Project Structure
+## Architecture & Design Philosophy
+
+### Why Parquet Files?
+I chose **Apache Parquet** as our data storage format for several key reasons:
+
+- **Performance**: Parquet is a columnar storage format that's optimized for analytics workloads. It provides 10-100x faster query performance compared to CSV files
+- **Compression**: Parquet files are highly compressed (often 80-90% smaller than CSV), reducing storage requirements and network transfer times
+- **Schema Evolution**: Parquet preserves data types and schema information, eliminating the need to re-parse data types on every load
+- **Cross-Platform**: Parquet is language-agnostic and works seamlessly with Python, R, Java, and other data science tools
+- **Streamlit Compatibility**: Parquet files load much faster in Streamlit applications, providing better user experience
+
+### Design Architecture
+The project follows a **modular, pipeline-based architecture**:
+
+```
+Data Source → ETL Pipeline → Storage → Dashboard
+     ↓              ↓           ↓         ↓
+Toronto API → Clean/Process → Parquet → Streamlit
+```
+
+**Key Design Principles:**
+- **Separation of Concerns**: Data pipeline, storage, and visualization are completely separate modules
+- **Caching Strategy**: Multi-level caching (Streamlit cache + Parquet files) for optimal performance
+- **Error Handling**: Graceful degradation with clear error messages for users
+- **Scalability**: Architecture supports adding new data sources or visualization types
+- **Maintainability**: Simple, readable code with clear documentation
+
+## Project Structure
 
 ```
 dinesafe-streamlit/
@@ -25,7 +52,7 @@ dinesafe-streamlit/
 └── README.md               # This file
 ```
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Option 1: One-Command Setup (Recommended)
 
@@ -50,34 +77,34 @@ python data_pipeline/retrieve_and_clean.py
 streamlit run streamlit_dashboard/app.py
 ```
 
-## 📊 Dashboard Features
+## Dashboard Features
 
-### 🗺️ Interactive Heatmap
+### Interactive Heatmap
 - **Location Visualization**: Interactive map showing restaurant locations
 - **Inspection Frequency**: Bubble size and color indicate inspection count
 - **Hover Details**: Click on locations to see establishment details
 - **Top Establishments**: Table showing most frequently inspected restaurants
 
-### 📈 Analytics Dashboard
+### Analytics Dashboard
 - **Severity Distribution**: Bar chart showing inspection severity levels
 - **Establishment Status**: Pie chart of business status distribution
 - **Timeline Analysis**: Line chart showing inspections over time
 - **Business Types**: Horizontal bar chart of establishment types
 
-### 🔍 Advanced Filtering
+### Advanced Filtering
 - **Date Range**: Filter by inspection date range
 - **Severity Levels**: Select specific severity levels (Critical, Significant, Minor, etc.)
 - **Establishment Status**: Filter by business status (Pass, Conditional Pass, Closed, etc.)
 - **Business Type**: Filter by establishment type (Restaurant, Food Truck, etc.)
 - **Business Name**: Search by establishment name
 
-### 📋 Data Management
+### Data Management
 - **Interactive Data Table**: Browse and search through filtered data
 - **Data Export**: Download filtered data as CSV
 - **Real-time Metrics**: Live summary statistics
 - **Cached Loading**: Fast dashboard performance with data caching
 
-## 🧹 Data Pipeline
+## Data Pipeline
 
 The data pipeline automatically:
 
@@ -98,7 +125,7 @@ This will:
 - Save to `data/` directory
 - Generate metadata for the dashboard
 
-## 📊 Dashboard Usage
+## Dashboard Usage
 
 ### Navigation
 - **Heatmap Tab**: Interactive map visualization
@@ -115,11 +142,11 @@ Use the sidebar to filter data by:
 - Business name (text search)
 
 ### Data Export
-- Click "📥 Download CSV" in the Data Table tab
+- Click "Download CSV" in the Data Table tab
 - Exports only the currently filtered data
 - Includes all original columns and data
 
-## 🔧 Technical Details
+## Technical Details
 
 ### Architecture
 - **Frontend**: Streamlit with custom CSS styling
@@ -140,7 +167,7 @@ Use the sidebar to filter data by:
 - **Location Data**: Latitude, Longitude coordinates
 - **Business Metrics**: Inspection frequency, compliance history
 
-## 📈 Data Source
+## Data Source
 
 **Source**: [City of Toronto Open Data Portal - DineSafe Dataset](https://open.toronto.ca/dataset/dinesafe/)
 
@@ -148,7 +175,7 @@ Use the sidebar to filter data by:
 
 **Data Coverage**: All restaurant inspections in Toronto with location data.
 
-## 🛠️ Development
+## Development
 
 ### Prerequisites
 - Python 3.9+
@@ -176,7 +203,7 @@ python data_pipeline/retrieve_and_clean.py
 streamlit run streamlit_dashboard/app.py --server.runOnSave true
 ```
 
-## 🚨 Troubleshooting
+## Troubleshooting
 
 ### Common Issues
 
@@ -199,15 +226,15 @@ streamlit run streamlit_dashboard/app.py --server.runOnSave true
 - Verify Toronto Open Data API is available
 - Check disk space for data storage
 
-## 📝 License
+## License
 
 This project is for educational and research purposes. Data is sourced from the City of Toronto Open Data Portal.
 
-## 🤝 Contributing
+## Contributing
 
 Feel free to submit issues, feature requests, or pull requests to improve the dashboard.
 
 ---
 
-**Built with ❤️ using Streamlit, Polars, and Plotly**
+**Built with Streamlit, Polars, and Plotly**
 

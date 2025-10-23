@@ -8,7 +8,7 @@ from typing import Optional
 
 def save_data_locally(df: pl.DataFrame, filename: Optional[str] = None) -> str:
     """
-    Save the cleaned data locally as a parquet file for fast loading.
+    save the data as a parquet file so we can load it fast later
     
     Args:
         df: Cleaned Polars DataFrame
@@ -21,13 +21,13 @@ def save_data_locally(df: pl.DataFrame, filename: Optional[str] = None) -> str:
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         filename = f"dinesafe_data_{timestamp}.parquet"
     
-    # Create data directory if it doesn't exist
+    # make the data folder if it doesnt exist
     data_dir = Path("data")
     data_dir.mkdir(exist_ok=True)
     
     filepath = data_dir / filename
     
-    # Convert to pandas for parquet saving (Polars parquet support varies)
+    # convert to pandas because polars parquet support is weird
     df_pandas = df.to_pandas()
     df_pandas.to_parquet(filepath, index=False)
     
@@ -38,7 +38,7 @@ def save_data_locally(df: pl.DataFrame, filename: Optional[str] = None) -> str:
 
 def save_metadata(df: pl.DataFrame, filepath: str) -> None:
     """
-    Save metadata about the dataset for dashboard loading.
+    save some info about the dataset so the dashboard can show it
     
     Args:
         df: Cleaned Polars DataFrame
@@ -53,7 +53,7 @@ def save_metadata(df: pl.DataFrame, filepath: str) -> None:
             "max": df["Inspection Date"].max().strftime("%Y-%m-%d") if "Inspection Date" in df.columns else None
         },
         "last_updated": datetime.now().isoformat(),
-        "unique_establishments": df["Establishment ID"].n_unique() if "Establishment ID" in df.columns else 0,
+        "unique_establishments": df["Establishment ID"].nunique() if "Establishment ID" in df.columns else 0,
         "total_inspections": len(df)
     }
     
@@ -66,7 +66,7 @@ def save_metadata(df: pl.DataFrame, filepath: str) -> None:
 
 def load_latest_data() -> pl.DataFrame:
     """
-    Load the most recent data file from the data directory.
+    load the newest data file from the data folder
     
     Returns:
         Polars DataFrame with the latest data
@@ -75,14 +75,14 @@ def load_latest_data() -> pl.DataFrame:
     if not data_dir.exists():
         raise FileNotFoundError("No data directory found. Run the data pipeline first.")
     
-    # Find the most recent parquet file
+    # find the newest parquet file
     parquet_files = list(data_dir.glob("*.parquet"))
     if not parquet_files:
         raise FileNotFoundError("No parquet files found in data directory.")
     
     latest_file = max(parquet_files, key=lambda x: x.stat().st_mtime)
     
-    # Load with pandas then convert to polars
+    # load with pandas then convert to polars
     df_pandas = pd.read_parquet(latest_file)
     df = pl.from_pandas(df_pandas)
     

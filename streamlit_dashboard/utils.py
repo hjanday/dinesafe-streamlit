@@ -10,7 +10,7 @@ import numpy as np
 
 def create_map_plot(df: pd.DataFrame, title: str = "Toronto Restaurant Inspections Map") -> go.Figure:
     """
-    Create an interactive map showing restaurant locations and inspection frequency.
+    make a map showing where restaurants are and how many inspections they had
     
     Args:
         df: Pandas DataFrame with map data
@@ -22,23 +22,23 @@ def create_map_plot(df: pd.DataFrame, title: str = "Toronto Restaurant Inspectio
     if df.empty:
         return go.Figure()
     
-    # Create the map using Plotly's scatter_mapbox
+    # make the map using plotly
     fig = go.Figure()
     
-    # Add scatter plot on map
+    # add dots on the map
     fig.add_trace(go.Scattermapbox(
         lat=df['Latitude'],
         lon=df['Longitude'],
         mode='markers',
         marker=dict(
-            size=df['inspection_count'] * 3,  # Size based on inspection count
+            size=df['inspection_count'] * 3,  # bigger dots for more inspections
             color=df['inspection_count'],
             colorscale='Reds',
             showscale=True,
             colorbar=dict(title="Inspection Count"),
             sizemode='diameter',
             sizemin=8,
-            sizeref=2,  # Scale factor for size
+            sizeref=2,  # scale factor for size
             opacity=0.8
         ),
         text=df['Establishment Name'] + '<br>' + 
@@ -50,16 +50,16 @@ def create_map_plot(df: pd.DataFrame, title: str = "Toronto Restaurant Inspectio
         name='Restaurants'
     ))
     
-    # Update layout for map
+    # set up the map layout
     fig.update_layout(
         title=title,
         mapbox=dict(
-            style="open-street-map",  # Use OpenStreetMap style
+            style="open-street-map",  # use open street map
             center=dict(
-                lat=df['Latitude'].mean(),  # Center on Toronto
+                lat=df['Latitude'].mean(),  # center on toronto
                 lon=df['Longitude'].mean()
             ),
-            zoom=10  # Zoom level for Toronto
+            zoom=10  # zoom level for toronto
         ),
         height=600,
         showlegend=False
@@ -70,7 +70,7 @@ def create_map_plot(df: pd.DataFrame, title: str = "Toronto Restaurant Inspectio
 
 def create_severity_chart(df: pd.DataFrame) -> go.Figure:
     """
-    Create a bar chart showing inspection severity distribution.
+    make a bar chart showing how many inspections of each severity level
     
     Args:
         df: Polars DataFrame with inspection data
@@ -102,7 +102,7 @@ def create_severity_chart(df: pd.DataFrame) -> go.Figure:
 
 def create_status_chart(df: pd.DataFrame) -> go.Figure:
     """
-    Create a pie chart showing establishment status distribution.
+    make a pie chart showing how many places are open vs closed etc
     
     Args:
         df: Polars DataFrame with inspection data
@@ -128,7 +128,7 @@ def create_status_chart(df: pd.DataFrame) -> go.Figure:
 
 def create_timeline_chart(df: pd.DataFrame) -> go.Figure:
     """
-    Create a timeline chart showing inspections over time.
+    make a line chart showing how many inspections happened over time
     
     Args:
         df: Polars DataFrame with inspection data
@@ -139,7 +139,7 @@ def create_timeline_chart(df: pd.DataFrame) -> go.Figure:
     if df is None or df.empty:
         return go.Figure()
     
-    # Group by date and count inspections
+    # group by date and count how many inspections each day
     timeline_data = (
         df
         .groupby("Inspection Date")
@@ -162,7 +162,7 @@ def create_timeline_chart(df: pd.DataFrame) -> go.Figure:
 
 def create_summary_metrics(df: pd.DataFrame) -> Dict[str, Any]:
     """
-    Create summary metrics for display in the dashboard.
+    calculate some basic stats to show at the top
     
     Args:
         df: Polars DataFrame with inspection data
@@ -186,7 +186,7 @@ def create_summary_metrics(df: pd.DataFrame) -> Dict[str, Any]:
 
 def display_summary_cards(metrics: Dict[str, Any]) -> None:
     """
-    Display summary metrics as cards in the dashboard.
+    show the summary stats as cards at the top
     
     Args:
         metrics: Dictionary with summary metrics
@@ -224,7 +224,7 @@ def display_summary_cards(metrics: Dict[str, Any]) -> None:
 
 def create_establishment_type_chart(df: pd.DataFrame) -> go.Figure:
     """
-    Create a horizontal bar chart showing establishment types.
+    make a horizontal bar chart showing different types of restaurants
     
     Args:
         df: Polars DataFrame with inspection data
@@ -248,7 +248,7 @@ def create_establishment_type_chart(df: pd.DataFrame) -> go.Figure:
     )
     
     fig.update_layout(
-        height=max(400, len(type_counts) * 30),  # Dynamic height based on number of types
+        height=max(400, len(type_counts) * 30),  # make it taller if there are lots of types
         showlegend=False
     )
     
