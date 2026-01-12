@@ -1,5 +1,4 @@
 import requests
-import pandas as pd
 import polars as pl
 import io
 # toronto open data uses ckan api

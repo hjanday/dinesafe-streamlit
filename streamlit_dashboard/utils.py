@@ -1,11 +1,8 @@
 import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
-from plotly.subplots import make_subplots
 import pandas as pd
-import polars as pl
-from typing import Dict, List, Any, Optional
-import numpy as np
+from typing import Dict, Any
 
 
 def create_map_plot(df: pd.DataFrame, title: str = "Toronto Restaurant Inspections Map") -> go.Figure:

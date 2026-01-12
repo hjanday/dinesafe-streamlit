@@ -6,7 +6,6 @@ this wont work on streamlit cloud but helps with local testing
 
 import subprocess
 import os
-import sys
 
 def kill_streamlit_processes():
     """kill any running streamlit processes on your local machine"""

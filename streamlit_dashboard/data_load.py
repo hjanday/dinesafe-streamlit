@@ -1,5 +1,4 @@
 import streamlit as st
-import polars as pl
 import pandas as pd
 from pathlib import Path
 import json
@@ -14,7 +13,7 @@ from data_pipeline.store_data import load_latest_data
 
 
 @st.cache_data(ttl=3600, show_spinner="Loading DineSafe data...")  # cache for 1 hour
-def load_dinesafe_data() -> pl.DataFrame:
+def load_dinesafe_data() -> Optional[pd.DataFrame]:
     """
     load the dinesafe data with caching so it doesnt take forever
     
@@ -82,7 +81,7 @@ def get_data_summary(df: pd.DataFrame) -> Dict[str, Any]:
 
 def filter_data(df: pd.DataFrame, 
                 severity_filter: list = None,
-                status_filter: list = None,
+                status_filter: list = None, 
                 establishment_type_filter: list = None,
                 date_range: tuple = None,
                 business_name_filter: str = None) -> pd.DataFrame:

@@ -4,8 +4,6 @@ simple script to run the toronto dinesafe dashboard
 works for both local development and streamlit cloud deployment
 """
 
-import sys
-import os
 from pathlib import Path
 
 def check_data_exists():
