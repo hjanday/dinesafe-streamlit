@@ -1,6 +1,5 @@
 # Toronto DineSafe Dashboard
-I chose **Apache Parquet** as our data storage format for several key reasons:
-
+I chose **Apache Parquet**:
 - **Performance**: Parquet is a columnar storage format that's optimized for analytics workloads. It provides 10-100x faster query performance compared to CSV files
 - **Compression**: Parquet files are highly compressed (often 80-90% smaller than CSV), reducing storage requirements and network transfer times
 - **Schema Evolution**: Parquet preserves data types and schema information, eliminating the need to re-parse data types on every load
